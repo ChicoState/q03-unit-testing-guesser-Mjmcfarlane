@@ -15,7 +15,53 @@ using std::string;
   has 100, the distance is 10.
 */
 unsigned int Guesser::distance(string guess){
-  return 0;
+  //start with a distance of 0
+  int dist = 0;
+  //if guesser's length is smaller than the secret's length
+  if(guess.size() < m_secret.size()){
+    //get the extra length
+    int extraCharacters = m_secret.size() - guess.size();
+    //see how many characters match
+    for(int i=0; i<guess.size(); i++){
+      if(guess[i] != m_secret[i]){
+        dist++;
+      }
+    }
+    //add the extra length to the dist variable
+    dist = dist + extraCharacters;
+  //if the secret's size is less than the guess's size
+  } else if (m_secret.size() < guess.size()){
+    //find out the sie difference
+    int extraCharacters = guess.size() - m_secret.size();
+    //check for matching characters
+    for(int i=0; i<m_secret.size(); i++){
+      if(m_secret[i] != guess[i]){
+        dist++;
+      }
+    }
+    //add the extra length to dist
+    dist = dist + extraCharacters;
+  //they are the same size
+  } else {
+    //check for matching characters
+    for(int i=0; i<m_secret.size(); i++){
+      if(m_secret[i] != guess[i]){
+        dist++;
+      }
+    }
+  }
+
+  //if the distance variable is larger than secret's length
+  if(dist > m_secret.size()){
+    //return the length of secret
+    return m_secret.size();
+  //the distance is less than secret's length
+  } else {
+    //return the distance variable;
+    return dist;
+  }
+
+  return dist;
 }
 
 /*
@@ -25,6 +71,25 @@ unsigned int Guesser::distance(string guess){
   otherwise, it will be truncated at that length.
 */
 Guesser::Guesser(string secret){
+  //if the secret input is 32 characters or less
+  if(secret.size() <= 32){
+    m_secret = secret;
+  //secret input greater than 32 characters
+  } else {
+    //only want the first 32 characters of secret input
+    string secret_section;
+
+    for(int i=0; i<32; i++){
+      secret_section[i] = secret[i];
+    }
+    m_secret = secret_section;
+  }
+
+  //guesser starts with 3 guesses
+  m_remaining = 3;
+
+  //secret starts not locked
+  locked = false;
 
 }
 
@@ -40,7 +105,35 @@ Guesser::Guesser(string secret){
   and the secret.
 */
 bool Guesser::match(string guess){
-  return true;
+  //function detects brute force and locks the secret
+  if(distance(guess) > 2){
+    m_remaining--;
+    locked = true;
+    return false;
+  }
+
+  //if they have no guesses remaining then the secret is locked
+  if(m_remaining == 0){
+    locked = true;
+    return false;
+  // if the guess if the same as m_secret return true and reset remaining guesses
+  } else if (locked == true){
+    if(distance(guess)==0){
+      m_remaining = 3;
+    } else {
+      m_remaining--;
+    }
+    return false;
+  } else if(distance(guess) == 0){
+    m_remaining = 3;
+    return true;
+  // the secret doesn't match the guess remove 1 from remaining chances and return false
+  } else {
+    m_remaining--;
+    return false;
+  }
+
+  return false;
 }
 
 /*
@@ -51,6 +144,7 @@ bool Guesser::match(string guess){
   reset to three (3).
 */
 unsigned int Guesser::remaining(){
-  return 0;
+  //returns how many remaining guesses the person has
+  return m_remaining;
 }
 

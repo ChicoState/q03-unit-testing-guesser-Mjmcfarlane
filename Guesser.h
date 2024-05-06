@@ -10,6 +10,8 @@ class Guesser
 private:
   string m_secret;
   unsigned int m_remaining;
+  //create a boolean for if the secret is locked
+  bool locked;
 
   /*
     Returns an whole number representing the distance between the guess,
